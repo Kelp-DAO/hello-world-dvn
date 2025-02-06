@@ -82,8 +82,10 @@ const startTaskAggregatorServer = async (): Promise<void> => {
 const main = async () => {
     ProcessHelper.waitUntilAnvilIsAvailable()
         .then(async () => {
+            // register DVN
             await registerDVN();
 
+            // start TaskAggregation server
             startTaskAggregatorServer()
         })
 };

@@ -59,28 +59,11 @@ The operators who are currently opted-in with the DVN:
     `npm install -g pm2`
     `npm install -g pino-pretty`
 
-4. Create .env
+4. Bootstrap the HelloWorld DVn demo by running:
 
-    Create a .env file in the root directory and populate it with the following content:
-    
-        ######### Kernel configuration
-        KERNEL_CONFIG_ADDRESS=0x479C4f372654AaE38e9fa3D57c211674e6c96f34
+        chmod +x bin/start.sh
         
-        # 1° anvil account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-        KERNEL_MANAGER_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-        
-        ######### Local configuration
-        TASK_AGGREGATOR_SERVER_HOST=localhost
-        TASK_AGGREGATOR_SERVER_PORT=3000
-        RPC_PROVIDER=http://127.0.0.1:8545
-
-
-5. Bootstrap the HelloWorld DVn demo by running:
-
-        npm run init-context \
-        && (pm2 delete all --force > /dev/null 2>&1 || true) \
-        && pm2 start pm2.config.cjs \
-        && pm2 monit
+        sh bin/start.sh
 
 
 ## Tweaks
@@ -95,3 +78,10 @@ The operators who are currently opted-in with the DVN:
             && (pm2 delete all --force > /dev/null 2>&1 || true) \
             && INSTANCES=15 pm2 start pm2.config.cjs \
             && pm2 monit
+            
+2. Overwrite default config values
+
+    You can optionally overwrite one or more configuration values by specifying them in a `.env` file.
+    
+    1. Create a `.env` file by copying the `.env.example` file with `cp .env.example .env`
+    2. Define only the values you want to overwrite, all parameters are optional

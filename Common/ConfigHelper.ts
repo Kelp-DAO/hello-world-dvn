@@ -1,19 +1,29 @@
 import 'dotenv/config';
 
 export class ConfigHelper {
+  public static DEFAULT_KERNEL_CONFIG_ADDRESS = '0xA713481cEB09d3c8214fD1DEf27a935Aa1aFCFe8'
+  
+  // 1° anvil account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+  public static DEFAULT_KERNEL_MANAGER_PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+
+  public static DEFAULT_TASK_AGGREGATOR_SERVER_HOST = 'localhost'
+  public static DEFAULT_TASK_AGGREGATOR_SERVER_PORT = '3000'
+  public static DEFAULT_RPC_PROVIDER = 'http://127.0.0.1:8545'
+
+
   /**
    * 
    * @returns 
    */
   static getRpcProviderUrl(): string {
-    return ConfigHelper.getConfigValue('RPC_PROVIDER_URL', 'http://localhost:8545');
+    return ConfigHelper.getConfigValue('RPC_PROVIDER_URL', ConfigHelper.DEFAULT_RPC_PROVIDER);
   }
   
   /**
    * @returns 
    */
   static getKernelConfigAddress(): string {
-    return ConfigHelper.getConfigValue('KERNEL_CONFIG_ADDRESS');
+    return ConfigHelper.getConfigValue('KERNEL_CONFIG_ADDRESS', ConfigHelper.DEFAULT_KERNEL_CONFIG_ADDRESS);
   }
   
   /**
@@ -21,7 +31,7 @@ export class ConfigHelper {
    * @returns 
    */
   static getKernelManagerPrivateKey(): string {
-    return ConfigHelper.getConfigValue('KERNEL_MANAGER_PRIVATE_KEY');
+    return ConfigHelper.getConfigValue('KERNEL_MANAGER_PRIVATE_KEY', ConfigHelper.DEFAULT_KERNEL_MANAGER_PRIVATE_KEY);
   }
   
   /**
@@ -29,7 +39,7 @@ export class ConfigHelper {
    * @returns 
    */
   static getTaskAggregatorServerHost(): string {
-    return ConfigHelper.getConfigValue('TASK_AGGREGATOR_SERVER_HOST', 'localhost');
+    return ConfigHelper.getConfigValue('TASK_AGGREGATOR_SERVER_HOST', ConfigHelper.DEFAULT_TASK_AGGREGATOR_SERVER_HOST);
   }
   
   /**
@@ -37,7 +47,7 @@ export class ConfigHelper {
    * @returns 
    */
   static getTaskAggregatorServerPort(): string {
-    return ConfigHelper.getConfigValue('TASK_AGGREGATOR_SERVER_PORT');
+    return ConfigHelper.getConfigValue('TASK_AGGREGATOR_SERVER_PORT', ConfigHelper.DEFAULT_TASK_AGGREGATOR_SERVER_PORT);
   }
 
   /**
@@ -50,7 +60,6 @@ export class ConfigHelper {
     const value = process.env[key];
     
     if (!value) {
-        // throw new Error(`"${key}" is not defined in the .env`)
         return defaultVal;
     }
 
