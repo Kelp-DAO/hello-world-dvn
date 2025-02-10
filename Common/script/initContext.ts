@@ -6,14 +6,14 @@ import { logger } from "../Logger";
  * Performs operations to prepare the context for the demo
  */
 const main = async () => {
-    await DatabaseManager.resetDatabase(logger);
-    CacheManager.erasedDataInSharedCache();
-    CacheManager.eraseTransactionLocks();
-}
+  await DatabaseManager.resetDatabase(logger);
+  CacheManager.erasedDataInSharedCache();
+  CacheManager.eraseTransactionLocks();
+};
 
 /**
- * 
+ *
  */
 main().catch((error) => {
-    logger.error("Error in main function:", error);
+  logger.error("Error in main function:", error);
 });

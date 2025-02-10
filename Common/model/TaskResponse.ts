@@ -1,30 +1,48 @@
-
+/**
+ * Represents a response to a task
+ */
 export class TaskResponse {
-    id: number;
-    taskId: number;
-    operatorId: number;
+  /**
+   * The unique identifier of the task response
+   */
+  id: number;
 
-    /**
-     * creation datetime in milliseconds
-     */
-    createdAt: number
-    response: string;
+  /**
+   * The unique identifier of the task
+   */
+  taskId: number;
 
-    /**
-     * 
-     * @param serialized 
-     * @returns 
-     */
-    static buildFromDatabase(serialized: any) : TaskResponse {
-        const task = new TaskResponse();
+  /**
+   * The unique identifier of the operator who created the response
+   */
+  operatorId: number;
 
-        task.id = serialized.id;
-        task.taskId = serialized.taskId;
-        task.operatorId = serialized.operatorId;
-        task.response = serialized.response;
-        task.response = serialized.response;
-        task.createdAt = serialized.createdAt;
+  /**
+   * The timestamp when the response was created (in milliseconds)
+   */
+  createdAt: number;
 
-        return task;
-    }
+  /**
+   * The content of the response
+   */
+  response: string;
+
+  /**
+   * Creates an instance of TaskResponse from a serialized database object
+   *
+   * @param serialized The serialized database object
+   * @returns A new instance of TaskResponse
+   */
+  static buildFromDatabase(serialized: any): TaskResponse {
+    const task = new TaskResponse();
+
+    task.id = serialized.id;
+    task.taskId = serialized.taskId;
+    task.operatorId = serialized.operatorId;
+    task.response = serialized.response;
+    task.response = serialized.response;
+    task.createdAt = serialized.createdAt;
+
+    return task;
+  }
 }

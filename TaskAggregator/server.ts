@@ -5,8 +5,8 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express";
 import { DatabaseManager } from "../Common/DatabaseManager";
 import { Task } from "../Common/model/Task";
-import { OperatorHelper } from "./service/OperatorHelper";
-import { TaskManager } from "./service/TaskManager";
+import { OperatorHelper } from "../Common/OperatorHelper";
+import { TaskManager } from "../Common/TaskManager";
 import { logger } from "../Common/Logger";
 
 const app: Express = express();
@@ -25,7 +25,7 @@ app.use(helmet());
  *       200:
  *         description: Successful response
  */
-app.get('/status', (req, res) => {
+app.get("/status", (req, res) => {
   res.status(200).send({ status: "Server is running" });
 });
 
@@ -60,7 +60,7 @@ app.get('/status', (req, res) => {
  *       500:
  *         description: An error occurred while fetching the next task
  */
-app.get('/operator/:operatorId/task/next', (req, res) => {
+app.get("/operator/:operatorId/task/next", (req, res) => {
   const operatorId = req.params.operatorId;
 
   DatabaseManager.fetchNextUnresolvedTask(operatorId)
@@ -76,7 +76,9 @@ app.get('/operator/:operatorId/task/next', (req, res) => {
       }
     })
     .catch((error) => {
-      res.status(500).send({ error: "An error occurred while fetching the next task" });
+      res
+        .status(500)
+        .send({ error: "An error occurred while fetching the next task" });
     });
 });
 
@@ -116,58 +118,63 @@ app.get('/operator/:operatorId/task/next', (req, res) => {
  *       404:
  *         description: Task not found
  */
-app.post('/task/:id/response', (req, res) => {
+app.post("/task/:id/response", async (req, res) => {
   const taskId = req.params.id;
   const { response, operatorId, signature } = req.body;
-  
+
   if (!response) {
     return res.status(400).send({ error: "request.response is required" });
   }
+
   if (!operatorId) {
     return res.status(400).send({ error: "request.operatorId is required" });
   }
+
   if (!signature) {
     return res.status(400).send({ error: "request.signature is required" });
   }
 
-  logger.info(`[Task ${taskId}] Received response from Operator #${operatorId}`);
+  logger.info(
+    `[Task ${taskId}] Received response from Operator #${operatorId}`,
+  );
 
-  // get Task
-  DatabaseManager.getTask(taskId)
-    .then((task: Task) => {
-      // verify Operator
-      OperatorHelper.verifyOperator(operatorId)
-        .then(() => {
-          logger.info(`[Task ${taskId}] Operator #${operatorId} is verified`);
+  try {
+    // get Task
+    const task: Task = await DatabaseManager.getTask(taskId);
 
-          // register response
-          DatabaseManager.registerOperatorTaskResponse(task, operatorId, response, signature)
-            .then(() => {
-              logger.info(`[Task ${taskId}] Response from Operator #${operatorId} stored in database`);
+    // verify Operator
+    await OperatorHelper.verifyOperator(operatorId);
+    logger.info(`[Task ${taskId}] Operator #${operatorId} is verified`);
 
-              // validate received responses
-              TaskManager.validateTaskResponses(task)
-                .then((task: Task) => {
-                    logger.info(`[Task ${taskId}] Task Aggregator reached consensus: output is ${task.response}`);
-                })
-                .catch((err) => {
-                  // logger.error(`Error validating task responses: ${err}`);
-                })
-                .then(() => {
-                  res.status(200).send();
-                })
-            })
-            .catch((error) => {
-              res.status(400).send(error);
-            });
-        })
-        .catch((error) => {
-          res.status(400).send(error);
-        })
-    })
-    .catch(() => {
-      res.status(404).send('Task not found');
-    })
+    // verify signature
+    await OperatorHelper.verifySignature(task, operatorId, response, signature);
+    logger.info(`[Task ${taskId}] Signature is verified`);
+
+    // register response
+    await DatabaseManager.registerOperatorTaskResponse(
+      task,
+      operatorId,
+      response,
+      signature,
+    );
+    logger.info(
+      `[Task ${taskId}] Response from Operator #${operatorId} stored in database`,
+    );
+
+    // validate received responses
+    try {
+      await TaskManager.validateTaskResponses(task);
+      logger.info(
+        `[Task ${taskId}] Task Aggregator reached consensus: output is ${task.response}`,
+      );
+    } catch (error) {
+      // logger.error(`Error validating task responses: ${err}`);
+    }
+
+    res.status(200).send();
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 /**
@@ -175,16 +182,15 @@ app.post('/task/:id/response', (req, res) => {
  */
 const specs = swaggerJsdoc({
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Hello World DVN API',
-      version: '1.0.0',
-      description:
-        'Hello World DVN API documentation',
+      title: "Hello World DVN API",
+      version: "1.0.0",
+      description: "Hello World DVN API documentation",
     },
   },
   apis: [fileURLToPath(import.meta.url)],
 });
-app.use('/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+app.use("/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 export { app };

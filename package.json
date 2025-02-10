@@ -7,13 +7,16 @@
     "init-context": "tsx ./Common/script/initContext.ts | pino-pretty",
     "operator-lre": "tsx watch ./Operator/lre.ts | pino-pretty",
     "task-aggregator": "tsx watch ./TaskAggregator/index.ts | pino-pretty",
-    "task-generator": "tsx watch ./Common/script/taskGenerator.ts | pino-pretty"
+    "task-generator": "tsx watch ./Common/script/taskGenerator.ts | pino-pretty",
+    "eslint-fix": "eslint --fix ."
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "asteasolutions/zod-to-openapi",
     "@wemap/salesman.js": "^2.1.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
     "ethers": "^6.13.5",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
@@ -29,5 +32,10 @@
     "swagger-ui-express": "^5.0.1",
     "tsx": "^4.19.2",
     "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "eslint": "^9.20.0",
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.23.0"
   }
 }
